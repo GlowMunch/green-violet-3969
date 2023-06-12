@@ -1,11 +1,14 @@
 <body>
 <h1> Flights </h1>
-  <% @flight.each do |info| %>
-      <div id=<%= "#{info.number}" %>>
-        Flight Number: <%= info.number %> - Airline: <%= info.airline_name %>
+  <% @flights.each do |flight| %>
+      <div id="flight-<%= flight.id %>">
+        Flight Number: <%= flight.number %> - Airline: <%= flight.airline_name %>
         Passengers: </br>
-        <% info.passengers.each do |passenger| %>
-          <li> Passenger Name: <%= passenger.name %>, Age: <%= passenger.age %>
+        <% flight.passengers.each do |passenger| %>
+          <div id="pass-<%= passenger.id %>">
+          <li> Passenger Name: <%= passenger.name %> <%= button_to "Remove #{passenger.name}", flights_passenger_path(flight, passenger), method: :delete %></li>
+          </br>
+          </div>
         <% end %>
       </div>
     </br>

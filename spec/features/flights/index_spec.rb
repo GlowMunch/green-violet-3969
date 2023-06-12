@@ -8,6 +8,17 @@ require "rails_helper"
 # And next to each flight number I see the name of the Airline of that flight
 # And under each flight number I see the names of all that flight's passengers
 
+# User Story 2, Remove a Passenger from a Flight
+
+# As a visitor
+# When I visit the flights index page
+# Next to each passengers name
+# I see a link or button to remove that passenger from that flight
+# When I click on that link/button
+# I'm returned to the flights index page
+# And I no longer see that passenger listed under that flight,
+# And I still see the passenger listed under the other flights they were assigned to.
+
 describe "Flights index spec" do
   before(:each) do
     @airline1 = Airline.create!(name: "Alaska")
@@ -36,17 +47,19 @@ describe "Flights index spec" do
     @fp5 = FlightsPassenger.create(flight_id: @flight3.id, passenger_id: @pass5.id)
     @fp6 = FlightsPassenger.create(flight_id: @flight3.id, passenger_id: @pass6.id)
 
+    @fp6 = FlightsPassenger.create(flight_id: @flight3.id, passenger_id: @pass3.id)
+
+
   end
     it "see all flight numbers" do
-      
-      visit "/flights"
+      visit flights_path
       expect(page).to have_content(@flight1.number)
       expect(page).to have_content(@flight2.number)
       expect(page).to have_content(@flight3.number)
-      save_and_open_page
+
     end
 
-    it "see name of Airline next to flight number"
+    # it "see name of Airline next to flight number"
     # within("#{@flight1.name}") do
     #   expect(page).to have_content(@airline1.name)
     #   expect(page).to_not have_content(@airline2.name)
@@ -64,4 +77,18 @@ describe "Flights index spec" do
     #     expect(page).to_not have_content(@airline1.name)
     #     expect(page).to_not have_content(@airline2.name)
     #   end
+
+    it "can delete passenger from flight" do
+      visit flights_path
+        within("#flight-#{@flight2.id}") do
+          expect(page).to have_button("Remove Paul")
+          click_button("Remove Paul")
+          expect(current_path).to eq(flights_path)
+          expect(page).to_not have_content("Paul")
+        end
+        within("#flight-#{@flight3.id}") do
+          expect(page).to have_button("Remove Paul")
+        end
+          save_and_open_page
+    end
 end

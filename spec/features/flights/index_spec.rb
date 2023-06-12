@@ -19,7 +19,7 @@ require "rails_helper"
 # And I no longer see that passenger listed under that flight,
 # And I still see the passenger listed under the other flights they were assigned to.
 
-describe "Flights index spec" do
+RSpec.describe "Flights index spec" do
   before(:each) do
     @airline1 = Airline.create!(name: "Alaska")
     @airline2 = Airline.create!(name: "Southwest")
@@ -47,48 +47,45 @@ describe "Flights index spec" do
     @fp5 = FlightsPassenger.create(flight_id: @flight3.id, passenger_id: @pass5.id)
     @fp6 = FlightsPassenger.create(flight_id: @flight3.id, passenger_id: @pass6.id)
 
-    @fp6 = FlightsPassenger.create(flight_id: @flight3.id, passenger_id: @pass3.id)
+    @fp7 = FlightsPassenger.create(flight_id: @flight3.id, passenger_id: @pass3.id)
 
-
+    visit flights_path
   end
     it "see all flight numbers" do
-      visit flights_path
       expect(page).to have_content(@flight1.number)
       expect(page).to have_content(@flight2.number)
       expect(page).to have_content(@flight3.number)
-
     end
 
-    # it "see name of Airline next to flight number"
-    # within("#{@flight1.name}") do
-    #   expect(page).to have_content(@airline1.name)
-    #   expect(page).to_not have_content(@airline2.name)
-    #   expect(page).to_not have_content(@airline3.name)
-    # end
+    it "see name of Airline next to flight number" do
+      within("#flight-#{@flight1.id}") do
+        expect(page).to have_content(@airline1.name)
+        expect(page).to_not have_content(@airline2.name)
+        expect(page).to_not have_content(@airline3.name)
+      end
 
-    #   within "#flight-#{@flight2.id}" do
-    #     expect(page).to have_content(@airline2.name)
-    #     expect(page).to_not have_content(@airline3.name)
-    #     expect(page).to_not have_content(@airline1.name)
-    #   end
+      within("#flight-#{@flight2.id}") do
+        expect(page).to have_content(@airline2.name)
+        expect(page).to_not have_content(@airline3.name)
+        expect(page).to_not have_content(@airline1.name)
+      end
 
-    #   within "#flight-#{@flight3.id}" do
-    #     expect(page).to have_content(@airline3.name)
-    #     expect(page).to_not have_content(@airline1.name)
-    #     expect(page).to_not have_content(@airline2.name)
-    #   end
+      within("#flight-#{@flight3.id}") do
+        expect(page).to have_content(@airline3.name)
+        expect(page).to_not have_content(@airline1.name)
+        expect(page).to_not have_content(@airline2.name)
+      end
+    end
 
     it "can delete passenger from flight" do
-      visit flights_path
-        within("#flight-#{@flight2.id}") do
-          expect(page).to have_button("Remove Paul")
-          click_button("Remove Paul")
-          expect(current_path).to eq(flights_path)
-          expect(page).to_not have_content("Paul")
-        end
-        within("#flight-#{@flight3.id}") do
-          expect(page).to have_button("Remove Paul")
-        end
-          save_and_open_page
+      within("#flight-#{@flight2.id}") do
+        expect(page).to have_button("Remove Paul")
+        click_button("Remove Paul")
+        expect(current_path).to eq(flights_path)
+        expect(page).to_not have_content("Paul")
+      end
+      within("#flight-#{@flight3.id}") do
+        expect(page).to have_button("Remove Paul")
+      end
     end
 end
